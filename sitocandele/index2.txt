@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendita Candele</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f9f9f9; }
+        .header { background: #cc00ff; color: #fff; padding: 10px 20px; text-align: center; }
+        .container { display: flex; flex-wrap: wrap; justify-content: center; padding: 20px; }
+        .candle { border: 1px solid #ccc; border-radius: 5px; margin: 10px; padding: 10px; background: #fff; text-align: center; width: 200px; }
+        .candle img { max-width: 100%; border-radius: 5px; }
+        .candle h3 { font-size: 18px; margin: 10px 0; }
+        .candle p { margin: 5px 0; font-size: 16px; }
+        .candle button { background: #28a745; color: #fff; border: none; padding: 10px; cursor: pointer; border-radius: 3px; }
+        .candle button:hover { background: #218838; }
+        .cart { position: fixed; bottom: 20px; right: 20px; background: #333; color: #fff; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+        .cart:hover { background: #555; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>SCINTELLE DI ESSENZA</h1>
+    <p>Scopri le nostre candele artigianali!</p>
+</div>
+
+<div class="container" id="candleContainer">
+    <!-- Le candele verranno generate dinamicamente -->
+</div>
+
+<div class="cart" onclick="checkout()">
+    🛒 Carrello: <span id="cartCount">0</span> articoli
+</div>
+
+<script>
+    const candles = [
+        { id: 1, name: "Pino al profumo di arancia e cannella", price: 15, image: "candele/a1.jpg" },
+        { id: 2, name: "Margherita", price: 12, image: "candele/a2.jpg" },
+        { id: 3, name: "Candela al Sandalo", price: 18, image: "candele/a1.jpg" },
+        { id: 4, name: "Candela al Sandalo", price: 18, image: "candele/a1.jpg" },
+        // Aggiungi altre candele qui
+    ];
+    const cart = {};
+
+    function loadCandles() {
+        const container = document.getElementById('candleContainer');
+        candles.forEach(candle => {
+            const div = document.createElement('div');
+            div.className = 'candle';
+            div.innerHTML = `
+                <img src="${candle.image}" alt="${candle.name}">
+                <h3>${candle.name}</h3>
+                <p>Prezzo: €${candle.price}</p>
+                <button onclick="addToCart(${candle.id})">Aggiungi al Carrello</button>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    function addToCart(id) {
+        if (Object.keys(cart).length >= 12) {
+            alert("Puoi acquistare un massimo di 12 candele.");
+            return;
+        }
+        cart[id] = (cart[id] || 0) + 1;
+        updateCartCount();
+    }
+
+    function updateCartCount() {
+        const count = Object.values(cart).reduce((a, b) => a + b, 0);
+        document.getElementById('cartCount').textContent = count;
+    }
+
+    function checkout() {
+        if (Object.keys(cart).length === 0) {
+            alert("Il carrello è vuoto!");
+            return;
+        }
+        const details = candles
+            .filter(candle => cart[candle.id])
+            .map(candle => `${candle.name}: ${cart[candle.id]} pezzi`)
+            .join("\n");
+
+        const email = "tuoindirizzo@mail.com";
+        const subject = "Ordine Candele";
+        const body = `Dettagli ordine:\n\n${details}\n\nTotale articoli: ${Object.values(cart).reduce((a, b) => a + b, 0)}`;
+        window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    }
+
+    window.onload = loadCandles;
+</script>
+
+</body>
+</html>
